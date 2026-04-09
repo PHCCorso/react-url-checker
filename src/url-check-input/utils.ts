@@ -28,7 +28,7 @@ export function isWebUrl(urlPath: string): boolean {
    
     const hasWebProtocol = ["http:", "https:"].includes(url.protocol);
     const hasTld = url.hostname.replace(/^www\./, '').includes('.');
-    const isValidHost = !url.hostname.endsWith('.');
+    const isValidHost = !url.hostname.endsWith('.') && !url.hostname.endsWith(':');
     const isLocal = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
 
     return (hasWebProtocol && hasTld && isValidHost) || isLocal;
