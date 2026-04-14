@@ -1,5 +1,5 @@
 export type CheckURLResult = {
-  valid: boolean;
+  exists: boolean;
   message: string;
   type?: 'file' | 'path';
 };

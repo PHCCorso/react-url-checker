@@ -1,28 +1,46 @@
 import { useState, useEffect } from 'react'
-import { checkUrlDebounced } from './utils';
+import { checkUrlDebounced, isWebUrl } from './utils';
 
 import type { CheckURLResult } from '@shared/types';
 
 export function UrlCheckInput() {
   const [url, setUrl] = useState('');
-  const [urlValidationResult, setUrlValidationResult] = useState<CheckURLResult | undefined>(undefined);
+  const [isValidUrl, setIsValidUrl] = useState<boolean | undefined>(undefined);
+  const [urlExistenceResult, setUrlExistenceResult] = useState<CheckURLResult | undefined>(undefined);
 
   useEffect(() => {
+    let ignore = false;
+    setUrlExistenceResult(undefined);
+
     if (!url) {
-      setUrlValidationResult(undefined);
+      setIsValidUrl(undefined);
 
       return;
     };
 
-    checkUrlDebounced(url)
-    .then(result => {
-      setUrlValidationResult(result);
-    });
+    const urlValidityResult = isWebUrl(url);
+
+    setIsValidUrl(urlValidityResult);
+
+    if (urlValidityResult) {
+      checkUrlDebounced(url)
+        .then(result => {
+          if (!ignore) { // Only update state if the effect is still valid
+            setUrlExistenceResult(result);
+          }
+        });
+    }
+
+    return () => {
+      ignore = true; // Cleanup when the component unmounts or url changes
+    };
   }, [url]);
 
   return (
     <>
-        {urlValidationResult && <span>{urlValidationResult.message} {urlValidationResult.type && `| Type: ${urlValidationResult.type}`}</span>}
+        {isValidUrl === false && <span>This is not a valid URL</span>}
+        {isValidUrl === true && !urlExistenceResult ? <span>Checking...</span> : null}
+        {urlExistenceResult && <span>{urlExistenceResult.message} {urlExistenceResult.type && `| Type: ${urlExistenceResult.type}`}</span>}
         <input onChange={(event) => setUrl(event.target.value)}/>
     </>
   )

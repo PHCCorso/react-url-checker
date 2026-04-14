@@ -1,5 +1,4 @@
 import { serverCheckUrl } from '../server';
-import type { CheckURLResult } from '@shared/types';
 
 export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
   func: T,
@@ -37,12 +36,4 @@ export function isWebUrl(urlPath: string): boolean {
   }
 }
 
-async function checkUrl(url: string): Promise<CheckURLResult> {
-    if (!isWebUrl(url)) {
-        return Promise.resolve({valid: false, message: 'This is not a valid URL'});
-    }
-
-    return await serverCheckUrl(url);
-}
-
-export const checkUrlDebounced = debounceAsync(checkUrl, 500);
+export const checkUrlDebounced = debounceAsync(serverCheckUrl, 500);

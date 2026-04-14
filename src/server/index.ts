@@ -1,18 +1,37 @@
 import type { CheckURLResult } from '@shared/types';
 
+function waitRandom(maxMs: number): Promise<number> {
+  // Generate a random wait time between 0 and maxMs
+  const randomDelay: number = Math.floor(Math.random() * maxMs);
+  
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(randomDelay);
+    }, randomDelay);
+  });
+}
+
 export async function serverCheckUrl(urlStr: string): Promise<CheckURLResult> {
-    const result: CheckURLResult = {valid: true, message: 'URL exists', type: 'path'};
+  await waitRandom(1500);
 
-    const url = new URL(urlStr);
-    const pathname = url.pathname;
+  const result: CheckURLResult = {exists: true, message: 'URL exists', type: 'path'};
 
-    const lastSegment = pathname.split('/').pop() || '';
+  const url = new URL(urlStr);
+  const pathname = url.pathname;
 
-    const hasExtension = /\.[a-z0-9]{1,6}$/i.test(lastSegment);
+  const lastSegment = pathname.split('/').pop() || '';
 
-    if (hasExtension) {
-        result.type = 'file'
-    }
+  const hasExtension = /\.[a-z0-9]{1,6}$/i.test(lastSegment);
 
-    return result;
+  if (hasExtension) {
+      result.type = 'file'
+  }
+
+  const nonExistentUrlPattern = /not-here|inexistent|santa-claus|easter-bunny/i;
+
+  if (nonExistentUrlPattern.test(lastSegment)) {
+      return {exists: false, message: 'URL doesn\'t exist'};
+  }
+
+  return result;
 } 

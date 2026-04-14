@@ -1,73 +1,15 @@
-# React + TypeScript + Vite
+# URL Checker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight React and TypeScript app that validates URLs in real-time. 
 
-Currently, two official plugins are available:
+**What it does:**
+* **Instant Validation:** Checks URL formatting (protocol, domain) instantly as you type.
+* **Debounced Checks:** Waits 500ms after you stop typing to prevent server spam.
+* **Mock Verification:** Queries a simulated backend that adds a **random artificial delay (between 0 and 1.5 seconds)** and determines if the URL "exists" as a file or path. It simulates a non-existent URL failure if the path contains any of these specific test words: `not-here`, `inexistent`, `santa-claus`, or `easter-bunny`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Data Flow:**
+1. User types input -> Component State updates.
+2. Synchronous validation evaluates the raw string.
+3. If structurally valid, the debouncer starts a 500ms timer.
+4. On timeout, an asynchronous request fires to the Mock Service.
+5. Service resolves after 0–1.5s -> Component State updates with the final result.
